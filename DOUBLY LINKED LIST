@@ -1,0 +1,149 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+
+typedef struct Node {
+    int data;
+    struct Node* next;
+    struct Node* prev;
+} Node;
+
+
+Node* createNode(int data) {
+    Node* newNode = (Node*)malloc(sizeof(Node));
+    if (!newNode) {
+        printf("Memory allocation failed\n");
+        exit(1);
+    }
+    newNode->data = data;
+    newNode->next = NULL;
+    newNode->prev = NULL;
+    return newNode;
+}
+
+
+void insertAtBeginning(Node** head, int data) {
+    Node* newNode = createNode(data);
+    newNode->next = *head;
+    if (*head != NULL) {
+        (*head)->prev = newNode;
+    }
+    *head = newNode;
+}
+
+
+void insertAtEnd(Node** head, int data) {
+    Node* newNode = createNode(data);
+    if (*head == NULL) {
+        *head = newNode;
+    } else {
+        Node* temp = *head;
+        while (temp->next != NULL) {
+            temp = temp->next;
+        }
+        temp->next = newNode;
+        newNode->prev = temp;
+    }
+}
+
+
+void insertAfter(Node* prevNode, int data) {
+    if (prevNode == NULL) {
+        printf("The given previous node cannot be NULL\n");
+        return;
+    }
+    Node* newNode = createNode(data);
+    newNode->next = prevNode->next;
+    if (prevNode->next != NULL) {
+        prevNode->next->prev = newNode;
+    }
+    prevNode->next = newNode;
+    newNode->prev = prevNode;
+}
+
+
+void deleteNode(Node** head, int key) {
+    Node* temp = *head;
+
+    
+    while (temp != NULL && temp->data != key) {
+        temp = temp->next;
+    }
+
+   
+    if (temp == NULL) return;
+
+    
+    if (temp == *head) {
+        *head = temp->next;
+    }
+
+   
+    if (temp->next != NULL) {
+        temp->next->prev = temp->prev;
+    }
+
+    
+    if (temp->prev != NULL) {
+        temp->prev->next = temp->next;
+    }
+
+    free(temp);
+}
+
+
+void displayListForward(Node* head) {
+    Node* temp = head;
+    while (temp != NULL) {
+        printf("%d <-> ", temp->data);
+        temp = temp->next;
+    }
+    printf("NULL\n");
+}
+
+
+void displayListBackward(Node* head) {
+    Node* temp = head;
+    if (temp == NULL) return;
+
+    
+    while (temp->next != NULL) {
+        temp = temp->next;
+    }
+
+    
+    while (temp != NULL) {
+        printf("%d <-> ", temp->data);
+        temp = temp->prev;
+    }
+    printf("NULL\n");
+}
+
+
+int main() {
+    Node* head = NULL; 
+
+    insertAtEnd(&head, 10);
+    insertAtEnd(&head, 20);
+    insertAtEnd(&head, 30);
+
+    printf("Doubly Linked List forward: ");
+    displayListForward(head);
+
+    insertAtBeginning(&head, 5);
+    printf("Doubly Linked List after inserting 5 at the beginning: ");
+    displayListForward(head);
+
+    insertAfter(head->next, 15);
+    printf("Doubly Linked List after inserting 15 after second node: ");
+    displayListForward(head);
+
+    printf("Doubly Linked List backward: ");
+    displayListBackward(head);
+
+    deleteNode(&head, 20);
+    printf("Doubly Linked List after deleting node with value 20: ");
+    displayListForward(head);
+
+    return 0;
+}
