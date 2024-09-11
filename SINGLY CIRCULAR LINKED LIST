@@ -2,10 +2,10 @@
 #include <stdlib.h>
 
 
-typedef struct Node {
+struct Node {
     int data;
     struct Node* next;
-} Node;
+};
 
 
 Node* createNode(int data) {
