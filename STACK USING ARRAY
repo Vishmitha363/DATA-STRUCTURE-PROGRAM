@@ -42,13 +42,6 @@ int pop(Stack* stack) {
 }
 
 
-int peek(Stack* stack) {
-    if (isEmpty(stack)) {
-        printf("Stack is empty\n");
-        return -1;
-    }
-    return stack->array[stack->top];
-}
 
 
 void displayStack(Stack* stack) {
