@@ -1,0 +1,150 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+
+typedef struct Node {
+    int data;
+    struct Node* next;
+} Node;
+
+
+Node* createNode(int data) {
+    Node* newNode = (Node*)malloc(sizeof(Node));
+    if (!newNode) {
+        printf("Memory allocation failed\n");
+        exit(1);
+    }
+    newNode->data = data;
+    newNode->next = NULL;
+    return newNode;
+}
+
+
+void insertAtBeginning(Node** head, int data) {
+    Node* newNode = createNode(data);
+    if (*head == NULL) {
+        newNode->next = newNode;
+        *head = newNode;
+    } else {
+        Node* temp = *head;   
+        while (temp->next != *head) {
+            temp = temp->next;
+        }
+        newNode->next = *head;
+        *head = newNode;
+        temp->next = *head;
+    }
+}
+
+
+void insertAtEnd(Node** head, int data) {
+    Node* newNode = createNode(data);
+    if (*head == NULL) {
+       
+        newNode->next = newNode;
+        *head = newNode;
+    } else {
+        Node* temp = *head;  // Traverse to the last node
+        while (temp->next != *head) {
+            temp = temp->next;
+        }
+        temp->next = newNode;
+        newNode->next = *head;
+    }
+}
+
+
+void insertAfter(Node* prevNode, int data) {
+    if (prevNode == NULL) {
+        printf("The given previous node cannot be NULL\n");
+        return;
+    }
+    Node* newNode = createNode(data);
+    newNode->next = prevNode->next;
+    prevNode->next = newNode;
+}
+
+
+void deleteNode(Node** head, int key) {
+    Node* temp = *head;
+    Node* prev = NULL;
+
+   
+    if (*head == NULL) return;
+
+    
+    if (temp->data == key && temp->next == *head) {
+        free(temp);
+        *head = NULL;
+        return;
+    }
+
+    
+    if (temp->data == key) {
+        // Find the last node
+        while (temp->next != *head) {
+            temp = temp->next;
+        }
+      
+        Node* toDelete = *head;
+        *head = (*head)->next;
+        temp->next = *head;
+        free(toDelete);
+        return;
+    }
+
+   
+    prev = temp;
+    temp = temp->next;
+    while (temp != *head && temp->data != key) {
+        prev = temp;
+        temp = temp->next;
+    }
+
+   
+    if (temp == *head) return;
+
+  
+    prev->next = temp->next;
+    free(temp);
+}
+
+
+void displayList(Node* head) {
+    if (head == NULL) {
+        printf("List is empty\n");
+        return;
+    }
+    Node* temp = head;
+    do {
+        printf("%d -> ", temp->data);
+        temp = temp->next;
+    } while (temp != head);
+    printf("(back to head)\n");
+}
+
+
+int main() {
+    Node* head = NULL; // Initialize the head of the list
+
+    insertAtEnd(&head, 10);
+    insertAtEnd(&head, 20);
+    insertAtEnd(&head, 30);
+
+    printf("Circular Linked List: ");
+    displayList(head);
+
+    insertAtBeginning(&head, 5);
+    printf("Circular Linked List after inserting 5 at the beginning: ");
+    displayList(head);
+
+    insertAfter(head->next, 15);
+    printf("Circular Linked List after inserting 15 after second node: ");
+    displayList(head);
+
+    deleteNode(&head, 20);
+    printf("Circular Linked List after deleting node with value 20: ");
+    displayList(head);
+
+    return 0;
+}
