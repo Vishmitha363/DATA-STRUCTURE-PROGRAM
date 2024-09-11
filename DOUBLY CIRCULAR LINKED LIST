@@ -1,0 +1,155 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+
+ struct Node {
+    int data;
+    struct Node* next;
+    struct Node* prev;
+};
+
+
+Node* createNode(int data) {
+    Node* newNode = (Node*)malloc(sizeof(Node));
+    if (!newNode) {
+        printf("Memory allocation failed\n");
+        exit(1);
+    }
+    newNode->data = data;
+    newNode->next = newNode;
+    newNode->prev = newNode;
+    return newNode;
+}
+
+
+void insertAtBeginning(Node** head, int data) {
+    Node* newNode = createNode(data);
+    if (*head == NULL) {
+        
+        *head = newNode;
+    } else {
+        Node* tail = (*head)->prev; // Find the tail node
+        newNode->next = *head;
+        newNode->prev = tail;
+        tail->next = newNode;
+        (*head)->prev = newNode;
+        *head = newNode;
+    }
+}
+
+
+void insertAtEnd(Node** head, int data) {
+    Node* newNode = createNode(data);
+    if (*head == NULL) {
+       
+        *head = newNode;
+    } else {
+        Node* tail = (*head)->prev; // Find the tail node
+        newNode->next = *head;
+        newNode->prev = tail;
+        tail->next = newNode;
+        (*head)->prev = newNode;
+    }
+}
+
+
+void insertAfter(Node* prevNode, int data) {
+    if (prevNode == NULL) {
+        printf("The given previous node cannot be NULL\n");
+        return;
+    }
+    Node* newNode = createNode(data);
+    newNode->next = prevNode->next;
+    newNode->prev = prevNode;
+    prevNode->next->prev = newNode;
+    prevNode->next = newNode;
+}
+
+
+void deleteNode(Node** head, int key) {
+    if (*head == NULL) return;
+
+    Node* temp = *head;
+
+    
+    if (temp->data == key && temp->next == *head) {
+        free(temp);
+        *head = NULL;
+        return;
+    }
+
+   
+    do {
+        if (temp->data == key) {
+          
+            if (temp == *head) {
+               
+                *head = temp->next;
+            }
+            temp->prev->next = temp->next;
+            temp->next->prev = temp->prev;
+            free(temp);
+            return;
+        }
+        temp = temp->next;
+    } while (temp != *head);
+}
+
+
+void displayListForward(Node* head) {
+    if (head == NULL) {
+        printf("List is empty\n");
+        return;
+    }
+    Node* temp = head;
+    do {
+        printf("%d <-> ", temp->data);
+        temp = temp->next;
+    } while (temp != head);
+    printf("(back to head)\n");
+}
+
+
+void displayListBackward(Node* head) {
+    if (head == NULL) {
+        printf("List is empty\n");
+        return;
+    }
+    Node* temp = head;
+  
+    while (temp->next != head) {
+        temp = temp->next;
+    }
+    
+    do {
+        printf("%d <-> ", temp->data);
+        temp = temp->prev;
+    } while (temp->next != head);
+    printf("%d (back to end)\n", temp->data);
+}
+
+
+int main() {
+    Node* head = NULL; 
+
+    insertAtEnd(&head, 10);
+    insertAtEnd(&head, 20);
+    insertAtEnd(&head, 30);
+
+    printf("Doubly Circular Linked List forward: ");
+    displayListForward(head);
+
+    insertAtBeginning(&head, 5);
+    displayListForward(head);
+
+    insertAfter(head->next, 15);
+    displayListForward(head);
+
+    printf("Doubly Circular Linked List backward: ");
+    displayListBackward(head);
+
+    deleteNode(&head, 20);
+    displayListForward(head);
+
+    return 0;
+}
